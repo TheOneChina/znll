@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+        <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+
+       <!-- local
+       <property name="hibernate.connection.url">jdbc:postgresql://localhost/nda</property>-->
+        <!-- dev
+         <property name="hibernate.connection.url">jdbc:postgresql://192.168.150.74/nda</property>
+         -->
+        <property name="hibernate.connection.url">jdbc:postgresql://192.168.150.74/nda</property>
+        <!-- prod
+        <property name="hibernate.connection.url">jdbc:postgresql://101.37.29.183/nda</property>-->
+
+        <property name="hibernate.connection.username">nda</property>
+        <property name="hibernate.connection.password">txjscoldchain</property>
+        <property name="hibernate.default_schema">nda</property>
+
+        <property name="hibernate.cache.use_second_level_cache">false</property>
+        <property name="hibernate.bytecode.use_reflection_optimizer">false</property>
+        <property name="hibernate.jdbc.use_streams_for_binary">true</property>
+        <property name="javax.persistence.validation.mode">none</property>
+
+        <!-- TODO: Remove me for production -->
+        <property name="hibernate.generate_statistics">false</property>
+        <property name="hibernate.use_sql_comments">false</property>
+        <property name="hibernate.show_sql">false</property>
+        <property name="format_sql">false</property>
+
+        <!-- C3P0 connection pooling settings -->
+        <property name="hibernate.connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>
+        <property name="hibernate.c3p0.min_size">3</property>
+        <property name="hibernate.c3p0.max_size">20</property>
+        <property name="hibernate.c3p0.timeout">0</property>
+        <property name="hibernate.c3p0.max_statements">0</property>
+        <property name="hibernate.c3p0.idle_test_period">600</property>
+        <property name="hibernate.c3p0.acquire_increment">1</property>
+
+        <!-- Mapping-->
+        <!--<mapping class="com.tnsoft.hibernate.model.BinaryFile"/>-->
+        <mapping class="com.tnsoft.hibernate.model.Domain"/>
+        <mapping class="com.tnsoft.hibernate.model.Role"/>
+        <mapping class="com.tnsoft.hibernate.model.User"/>
+        <mapping class="com.tnsoft.hibernate.model.UserRole"/>
+        <mapping class="com.tnsoft.hibernate.model.Tag"/>
+        <mapping class="com.tnsoft.hibernate.model.OperateLog"/>
+        <mapping class="com.tnsoft.hibernate.model.Express"/>
+        <mapping class="com.tnsoft.hibernate.model.TagExpress"/>
+        <mapping class="com.tnsoft.hibernate.model.UserExpress"/>
+        <mapping class="com.tnsoft.hibernate.model.LocateExpress"/>
+        <mapping class="com.tnsoft.hibernate.model.TempExpress"/>
+        <mapping class="com.tnsoft.hibernate.model.AlertLevel"/>
+        <mapping class="com.tnsoft.hibernate.model.NDAAlert"/>
+        <mapping class="com.tnsoft.hibernate.model.Permission"/>
+        <mapping class="com.tnsoft.hibernate.model.RolePermission"/>
+        <mapping class="com.tnsoft.hibernate.model.SMSLog"/>
+        <mapping class="com.tnsoft.hibernate.model.Calibration"/>
+        <mapping class="com.tnsoft.hibernate.model.CalibrationTags"/>
+        <mapping class="com.tnsoft.hibernate.model.TagCalibrationUpload"/>
+
+
+    </session-factory>
+</hibernate-configuration>
