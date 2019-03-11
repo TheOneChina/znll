@@ -85,6 +85,7 @@ public interface Constants {
     interface SMSAlertType {
         int TYPE_TEMP_LOW = 1;
         int TYPE_TEMP_HIGH = 2;
+        int TYPE_TEMP_ELECTRICITY = 3;
     }
 
     interface UserState {

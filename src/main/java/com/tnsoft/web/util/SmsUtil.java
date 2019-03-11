@@ -78,6 +78,8 @@ public final class SmsUtil {
             content = "温度过低";
         } else if (type == Constants.SMSAlertType.TYPE_TEMP_HIGH) {
             content = "温度过高";
+        }else if (type == Constants.SMSAlertType.TYPE_TEMP_ELECTRICITY) {
+            content = "电量过低";
         }
         if (StringUtils.isEmpty(content)) {
             return null;

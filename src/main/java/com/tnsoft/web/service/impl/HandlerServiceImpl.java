@@ -11,8 +11,11 @@ import com.tnsoft.web.service.ExpressService;
 import com.tnsoft.web.service.HandlerService;
 import com.tnsoft.web.service.SendAlertSMSService;
 import com.tnsoft.web.util.Utils;
+import org.apache.tiles.request.ApplicationContext;
+import org.apache.tiles.request.ApplicationContextWrapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sun.applet.Main;
 
 import javax.annotation.Resource;
 import java.util.Calendar;
@@ -96,7 +99,7 @@ public class HandlerServiceImpl implements HandlerService {
         if (null != WIFI) {
             tag.setWifiStatus(WIFI);
         }
-
+        //是否电量过低
         boolean isLowPower = false;
         if (null != Vdd && Vdd != 1 && Vdd < Constants.Electricity.NORMAL) {
             isLowPower = true;
@@ -191,6 +194,9 @@ public class HandlerServiceImpl implements HandlerService {
                 }
                 if (null != expressTMax && temperature > expressTMax) {
                     type = Constants.SMSAlertType.TYPE_TEMP_HIGH;
+                }
+                if (isLowPower) {
+                    type = Constants.SMSAlertType.TYPE_TEMP_ELECTRICITY;
                 }
                 if (type > 0) {
                     Date lastSMSAlert = tag.getLastSMSAlert();
