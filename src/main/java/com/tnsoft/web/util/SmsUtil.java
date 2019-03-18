@@ -9,6 +9,7 @@ import com.aliyuncs.profile.DefaultProfile;
 import com.aliyuncs.profile.IClientProfile;
 import com.expertise.common.util.StringUtils;
 import com.tnsoft.web.model.Constants;
+import sun.applet.Main;
 
 public final class SmsUtil {
 
@@ -78,8 +79,10 @@ public final class SmsUtil {
             content = "温度过低";
         } else if (type == Constants.SMSAlertType.TYPE_TEMP_HIGH) {
             content = "温度过高";
-        }else if (type == Constants.SMSAlertType.TYPE_TEMP_ELECTRICITY) {
-            content = "电量过低";
+        } else if (type == Constants.SMSAlertType.TYPE_TEMP_ELECTRICITY) {
+            content = "电压过低";
+        } else if (type == Constants.SMSAlertType.TYPE_TEMP_LOSS) {
+            content = "设备失联";
         }
         if (StringUtils.isEmpty(content)) {
             return null;

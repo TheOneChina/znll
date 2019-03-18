@@ -1,13 +1,17 @@
 package com.tnsoft.web.service;
 
+import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
+import com.aliyuncs.exceptions.ClientException;
 import com.expertise.common.logging.Logger;
+import com.expertise.common.util.StringUtils;
 import com.tnsoft.hibernate.BaseHibernateUtils;
 import com.tnsoft.hibernate.DbSession;
 import com.tnsoft.hibernate.model.*;
 import com.tnsoft.web.model.Constants;
 import com.tnsoft.web.util.DBUtils;
+import com.tnsoft.web.util.SmsUtil;
+import com.tnsoft.web.util.Utils;
 import org.hibernate.SQLQuery;
-
 import java.util.Date;
 import java.util.List;
 
@@ -17,6 +21,11 @@ import java.util.List;
  * @author z
  */
 public class TagServices {
+
+    /**
+     * 短信报警间隔
+     */
+    private static final long SMS_ALERT_CYCLE = 3600000L;
 
     public Runnable getTagNotResponseService() {
         return new TagNotResponseService();
@@ -29,10 +38,11 @@ public class TagServices {
     /**
      * 根据设置的次数，该次数周期后不上传数据即为失联
      */
-    public static final class TagNotResponseService implements Runnable {
+
+    public static final class TagNotResponseService implements Runnable{
 
         @Override
-        public void run() {
+        public  void run() {
             DbSession db = BaseHibernateUtils.newSession();
             try {
                 db.beginTransaction();
@@ -86,16 +96,64 @@ public class TagServices {
                                 db.save(alert);
                                 express.addAlertCount();
                                 db.update(express);
+                                //设备失联警报持久化后，添加短信警报
+                                sendLossSms(tag,db);
                                 db.flush();
                             }
                         }
                     }
                 }
                 db.commit();
-            } finally {
+            }finally {
                 db.close();
             }
         }
+
+        public  void sendLossSms(Tag tag,DbSession db){
+            try {
+                Date lastSMSAlert = tag.getLastSMSAlert();
+                Date dateTemp = new Date();
+                String phones = tag.getAlertPhones();
+                if (!phones.isEmpty()) {
+                    String[] phonesArray = phones.split(";");
+                    dateTemp.setTime(dateTemp.getTime() - SMS_ALERT_CYCLE);
+                    if (null == lastSMSAlert || lastSMSAlert.before(dateTemp)) {
+                        boolean flag = false;
+                        String context = tag.getTagNo();
+                        if (!StringUtils.isEmpty(tag.getName())) {
+                            context = tag.getName();
+                        }
+                        for (String mobile : phonesArray) {
+                            if (Utils.isMobileNO(mobile) && tag.getSms() > 0) {
+                                if (!StringUtils.isEmpty(context) && !StringUtils.isEmpty(mobile) && Utils.isMobileNO(mobile)) {
+                                    SendSmsResponse sendSmsResponse = null;
+                                    try {
+                                        sendSmsResponse = SmsUtil.sendAlertSms(mobile, context, Constants.SMSAlertType.TYPE_TEMP_LOSS);
+                                    } catch (ClientException e) {
+                                        e.printStackTrace();
+                                    }
+                                    if (null != sendSmsResponse) {
+                                        SMSLog smsLog = new SMSLog(context, mobile, Constants.SMSAlertType.TYPE_TEMP_LOSS, sendSmsResponse.getMessage(), new Date(), tag.getDomainId());
+                                        db.save(smsLog);
+                                        tag.setSms(tag.getSms() - 1);
+                                        flag = true;
+                                    }
+                                }
+                            }
+                        }
+                        if (flag) {
+                            tag.setLastSMSAlert(new Date());
+                            //更新tag信息
+                            db.update(tag);
+                        }
+                    }
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+                System.out.println(e.getMessage());
+            }
+        }
+
     }
 
     /**
@@ -139,6 +197,4 @@ public class TagServices {
         return (List<Express>) query.list();
 
     }
-
-
 }

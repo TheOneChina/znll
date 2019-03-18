@@ -86,6 +86,7 @@ public interface Constants {
         int TYPE_TEMP_LOW = 1;
         int TYPE_TEMP_HIGH = 2;
         int TYPE_TEMP_ELECTRICITY = 3;
+        int TYPE_TEMP_LOSS = 4;
     }
 
     interface UserState {
